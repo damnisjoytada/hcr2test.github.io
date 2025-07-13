@@ -46,15 +46,14 @@
 
   <canvas id="gameCanvas"></canvas>
 
-  <!-- Load Box2D and RUBE -->
+  <!-- Box2D + RUBE loader -->
   <script src="https://unpkg.com/box2dweb@2.1.a.3/build/Box2dWeb-2.1.a.3.min.js"></script>
   <script src="https://rawcdn.githack.com/vadim0x60/rubeworld-js/master/rubeworld.js"></script>
 
   <script>
     const canvas = document.getElementById("gameCanvas");
     const ctx = canvas.getContext("2d");
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    resizeCanvas();
 
     let engineLevel = 1;
     let rubeWorld = null;
@@ -74,16 +73,21 @@
       engineLevel = 1;
       document.getElementById("upgradeInfo").textContent = "Engine Lv: 1";
 
-      rubeWorld = new RUBE.World();
-
-      rubeWorld.loadFromRUBEJson("decryped_jpm.txt", function(success) {
-        if (!success) {
-          alert("Failed to load RUBE file. Check filename and GitHub Pages settings.");
-          return;
-        }
-        console.log("RUBE world loaded.");
-        gameLoop();
-      });
+      rubeWorld = new RUBE.World({ scale: 30 });
+      fetch("decryped_jpm.txt")
+        .then(response => {
+          if (!response.ok) throw new Error("File not found");
+          return response.json();
+        })
+        .then(data => {
+          const success = rubeWorld.loadWorldFromRUBEObject(data);
+          if (!success) throw new Error("RUBE load failed");
+          console.log("RUBE world loaded.");
+          requestAnimationFrame(gameLoop);
+        })
+        .catch(err => {
+          alert("Error loading decryped_jpm.txt: " + err);
+        });
     }
 
     function gameLoop() {
@@ -96,7 +100,7 @@
 
     document.getElementById("upgradeEngine").onclick = upgradeEngine;
 
-    // Start game after tap (mobile fix)
+    // Mobile tap fallback to start
     canvas.addEventListener("touchstart", () => {
       if (!rubeWorld) startGame();
     }, { once: true });

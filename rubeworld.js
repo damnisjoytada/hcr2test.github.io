@@ -1,3 +1,4 @@
+
 // Simplified fallback version of rubeworld.js
 // This is a placeholder that mimics basic structure and logs load calls
 

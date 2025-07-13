@@ -53,7 +53,6 @@ function gameLoop() {
   rubeWorld.draw(ctx);
 }
 
-// Start on tap/click (mobile safe)
 canvas.addEventListener("touchstart", () => {
   if (!rubeWorld) startGame();
 }, { once: true });

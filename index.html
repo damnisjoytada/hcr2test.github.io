@@ -5,44 +5,65 @@
   <title>Hill Climb Clone</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    body, html { margin: 0; padding: 0; overflow: hidden; font-family: sans-serif; }
-    #ui { position: absolute; top: 0; left: 0; width: 100%; background: #333; color: white; padding: 10px; z-index: 10; }
-    select, button { margin-right: 10px; }
-    canvas { display: block; background: #87ceeb; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      font-family: sans-serif;
+      background: #222;
+    }
+    #ui {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      background: #333;
+      color: white;
+      padding: 10px;
+      z-index: 10;
+      font-size: 14px;
+    }
+    select, button {
+      margin-right: 10px;
+    }
+    canvas {
+      display: block;
+      background: #87ceeb;
+    }
   </style>
 </head>
 <body>
   <div id="ui">
-    <label>Level:
-      <select id="levelSelect">
-        <option value="hill">Hill</option>
-        <option value="desert">Desert</option>
-      </select>
-    </label>
     <label>Vehicle:
       <select id="vehicleSelect">
         <option value="rube">RUBE Vehicle</option>
       </select>
     </label>
-    <label>Upgrade:
-      <button id="upgradeEngine">Upgrade Engine</button>
-    </label>
+    <button id="upgradeEngine">Upgrade Engine</button>
     <span id="upgradeInfo">Engine Lv: 1</span>
     <button onclick="startGame()">Start Game</button>
   </div>
+
   <canvas id="gameCanvas"></canvas>
 
+  <!-- Load Box2D and RUBE -->
   <script src="https://unpkg.com/box2dweb@2.1.a.3/build/Box2dWeb-2.1.a.3.min.js"></script>
-  <script src="https://rawgit.com/vadim0x60/rubeworld-js/master/rubeworld.js"></script>
+  <script src="https://rawcdn.githack.com/vadim0x60/rubeworld-js/master/rubeworld.js"></script>
+
   <script>
-    let canvas = document.getElementById("gameCanvas");
-    let ctx = canvas.getContext("2d");
+    const canvas = document.getElementById("gameCanvas");
+    const ctx = canvas.getContext("2d");
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 
-    const SCALE = 30;
     let engineLevel = 1;
-    let rubeWorld;
+    let rubeWorld = null;
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener("resize", resizeCanvas);
 
     function upgradeEngine() {
       engineLevel++;
@@ -52,17 +73,15 @@
     function startGame() {
       engineLevel = 1;
       document.getElementById("upgradeInfo").textContent = "Engine Lv: 1";
-      loadRUBE();
-    }
 
-    function loadRUBE() {
       rubeWorld = new RUBE.World();
+
       rubeWorld.loadFromRUBEJson("decryped_jpm.txt", function(success) {
         if (!success) {
-          console.error("Failed to load RUBE world");
+          alert("Failed to load RUBE file. Check filename and GitHub Pages settings.");
           return;
         }
-        console.log("RUBE world loaded successfully");
+        console.log("RUBE world loaded.");
         gameLoop();
       });
     }
@@ -76,6 +95,15 @@
     }
 
     document.getElementById("upgradeEngine").onclick = upgradeEngine;
+
+    // Start game after tap (mobile fix)
+    canvas.addEventListener("touchstart", () => {
+      if (!rubeWorld) startGame();
+    }, { once: true });
+
+    canvas.addEventListener("click", () => {
+      if (!rubeWorld) startGame();
+    }, { once: true });
   </script>
 </body>
 </html>

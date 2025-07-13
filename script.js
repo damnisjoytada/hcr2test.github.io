@@ -33,7 +33,7 @@ function startGame() {
       if (!success) throw new Error("RUBE load failed");
       console.log("RUBE world loaded.");
 
-      // Show terrain right away
+      // Show terrain immediately
       rubeWorld.update();
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       rubeWorld.draw(ctx);
@@ -53,6 +53,7 @@ function gameLoop() {
   rubeWorld.draw(ctx);
 }
 
+// Start on tap/click (mobile safe)
 canvas.addEventListener("touchstart", () => {
   if (!rubeWorld) startGame();
 }, { once: true });

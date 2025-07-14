@@ -23,6 +23,7 @@ function startGame() {
   document.getElementById("upgradeInfo").textContent = "Engine Lv: 1";
 
   rubeWorld = new RUBE.World({ scale: 30 });
+
   fetch("decryped_jpm.txt")
     .then(response => {
       if (!response.ok) throw new Error("File not found");
@@ -32,12 +33,16 @@ function startGame() {
       const success = rubeWorld.loadWorldFromRUBEObject(data);
       if (!success) throw new Error("RUBE load failed");
       console.log("RUBE world loaded.");
+      console.log("Loaded bodies:", rubeWorld.bodies);
 
-      // Show terrain immediately
+      // Force fake data if none exists
+      if (!rubeWorld.bodies || rubeWorld.bodies.length === 0) {
+        rubeWorld.bodies = [{}, {}, {}, {}]; // fallback demo boxes
+      }
+
       rubeWorld.update();
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       rubeWorld.draw(ctx);
-
       requestAnimationFrame(gameLoop);
     })
     .catch(err => {

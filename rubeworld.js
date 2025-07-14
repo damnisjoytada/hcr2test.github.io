@@ -1,7 +1,4 @@
-
-// Simplified fallback version of rubeworld.js
-// This is a placeholder that mimics basic structure and logs load calls
-
+// rubeworld.js — Fallback if real RUBE is unavailable
 class RUBE {
   static World = class {
     constructor(options = {}) {
@@ -16,13 +13,13 @@ class RUBE {
     }
 
     update() {
-      // Simulate physics
+      // Optional physics logic
     }
 
     draw(ctx) {
       ctx.fillStyle = "#444";
-      this.bodies.forEach((body, index) => {
-        ctx.fillRect(100 + index * 100, 300, 80, 20); // Draw fake bodies
+      this.bodies.forEach((body, i) => {
+        ctx.fillRect(100 + i * 120, 300, 80, 20); // Draw placeholder rectangles
       });
     }
   }
